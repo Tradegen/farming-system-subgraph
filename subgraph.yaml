@@ -1,0 +1,57 @@
+specVersion: 0.0.2
+description: Tradegen is a decentralized trading platform that focuses on asset management, algo trading, and virtual trading.
+repository: https://github.com/Tradegen/farming-system-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: PoolManager
+    network: celo-alfajores
+    source:
+      address: "0xBcF24A50cd948b111bB0D297F27c53c063294fa4"
+      abi: PoolManager
+      startBlock: 12633980
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/PoolManager.ts
+      entities:
+        - PoolManager
+      abis:
+        - name: PoolManager
+          file: ./abis/PoolManager.json
+        - name: StakingRewards
+          file: ./abis/StakingRewards.json
+      eventHandlers:
+        - event: RewardPaid(address,uint256)
+          handler: handleRewardPaid
+        - event: RegisteredPool(address,address,uint256)
+          handler: handleRegisteredPool
+        - event: MarkedPoolAsEligible(address)
+          handler: handleMarkedPoolAsEligible
+        - event: UpdatedWeight(address,uint256,uint256)
+          handler: handleUpdatedWeight
+templates:
+  - kind: ethereum/contract
+    name: StakingRewards
+    network: celo-alfajores
+    source:
+      abi: StakingRewwards
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/StakingRewards.ts
+      entities:
+        - Farm
+      abis:
+        - name: StakingRewards
+          file: ./abis/BotPerformanceDataFeed.json
+      eventHandlers:
+        - event: Staked(indexed address,uint256,uint256)
+          handler: handleStaked
+        - event: Withdrawn(indexed address,uint256,uint256)
+          handler: handleWithdrawn
+        - event: RewardPaid(indexed address,uint256)
+          handler: handleRewardPaid
