@@ -1,0 +1,130 @@
+type PoolManager @entity {
+    # PoolManager contract address.
+    id: ID!
+
+    numberOfRegisteredPools: Int!
+    numberOfEligiblePools: Int!
+
+    globalWeight: BigInt!
+    totalRewardsDistributed: BigInt!
+    lastUpdated: BigInt!
+}
+
+type Pool @entity {
+    # Pool contract address.
+    id: ID!
+
+    farm: Farm!
+
+    isEligible: Boolean!
+    
+    totalRewardsCollected: BigInt!
+
+    unrealizedProfit: BigInt!
+
+    latestRecordedPrice: BigInt!
+    latestRecordedPeriodIndex: Int!
+
+    previousRecordedPrice: BigInt!
+    previousRecordedPeriodIndex: Int!
+
+    lastUpdated: BigInt!
+    createdOn: BigInt!
+
+    periods: [PoolPeriod!]! @derivedFrom(field: "pool")
+}
+
+type PoolPeriod @entity {
+    # Pool ID + "-" + period index
+    id: ID!
+
+    pool: Pool!
+
+    index: Int!
+
+    weight: BigInt!
+
+    rewardsCollected: BigInt!
+}
+
+type GlobalPeriod @entity {
+    # period index
+    id: ID!
+
+    rewardsDistributed: BigInt!
+
+    index: Int!
+
+    weight: BigInt!
+}
+
+type Farm @entity {
+    # Farm contract address.
+    id: ID!
+
+    pool: Pool!
+
+    totalRewardsEarned: BigInt!
+
+    totalSupply: BigInt!
+    weightedTotalSupply: BigInt!
+
+    numberOfC1: BigInt!
+    numberOfC2: BigInt!
+    numberOfC3: BigInt!
+    numberOfC4: BigInt!
+
+    positions: [Position!]! @derivedFrom(field: "farm")
+}
+
+type User @entity {
+    # User wallet address.
+    id: ID!
+
+    totalRewardsCollected: BigInt!
+
+    positions: [Position!]! @derivedFrom(field: "user")
+}
+
+type Position @entity {
+    # Farm address + "-" + user address
+    id: ID!
+
+    farm: Farm!
+    user: User!
+
+    totalRewardsEarned: BigInt!
+
+    totalSupply: BigInt!
+
+    numberOfC1: BigInt!
+    numberOfC2: BigInt!
+    numberOfC3: BigInt!
+    numberOfC4: BigInt!
+}
+
+type PoolManagerDayData @entity {
+    id: ID!
+    date: Int!
+
+    # Measured in TGEN.
+    dailyRewardsDistributed: BigInt!
+    totalRewardsDistributed: BigInt!
+
+    dailyPoolsRegistered: Int!
+    totalPoolsRegistered: Int!
+
+    dailyPoolsMarkedAsEligible: Int!
+    totalPoolsMarkedAsEligible: Int!
+}
+
+type PoolDayData @entity {
+    id: ID!
+    date: Int!
+
+    # Measured in TGEN.
+    dailyRewardsCollected: BigInt!
+
+    unrealizedProfit: BigInt!
+    tokenPrice: BigInt!
+}
