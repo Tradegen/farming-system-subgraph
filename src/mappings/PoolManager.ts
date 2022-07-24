@@ -48,7 +48,7 @@ export function handleRewardPaid(event: RewardPaid): void {
     if (poolPeriod === null) {
         poolPeriod = new PoolPeriod(poolPeriodID);
         poolPeriod.pool = event.params.poolAddress.toHexString();
-        poolPeriod.index = periodIndex;
+        poolPeriod.index = periodIndex.toI32();
         poolPeriod.weight = poolWeight;
         poolPeriod.rewardsCollected = ZERO_BI;
     }
@@ -60,7 +60,7 @@ export function handleRewardPaid(event: RewardPaid): void {
     if (globalPeriod === null) {
         globalPeriod = new GlobalPeriod(globalPeriodID);
         globalPeriod.rewardsDistributed = ZERO_BI;
-        globalPeriod.index = periodIndex;
+        globalPeriod.index = periodIndex.toI32();
         globalPeriod.weight = globalWeight;
     }
     globalPeriod.rewardsDistributed = globalPeriod.rewardsDistributed.plus(event.params.reward);
@@ -97,8 +97,8 @@ export function handleRegisteredPool(event: RegisteredPool): void {
     pool.totalRewardsCollected = ZERO_BI;
     pool.unrealizedProfit = ZERO_BI;
     pool.latestRecordedPrice = event.params.seedPrice;
-    pool.latestRecordedPeriodIndex = periodIndex;
-    pool.previousRecordedPeriodIndex = periodIndex;
+    pool.latestRecordedPeriodIndex = periodIndex.toI32();
+    pool.previousRecordedPeriodIndex = periodIndex.toI32();
     pool.previousRecordedPrice = event.params.seedPrice;
     pool.lastUpdated = event.block.timestamp;
     pool.createdOn = event.block.timestamp;
@@ -163,11 +163,11 @@ export function handleUpdatedWeight(event: UpdatedWeight): void {
     let pool = Pool.load(event.params.poolAddress.toHexString());
     pool.unrealizedProfit = event.params.newUnrealizedProfits;
     pool.lastUpdated = event.block.timestamp;
-    if (periodIndex > pool?.latestRecordedPeriodIndex) {
+    if (periodIndex.toI32() > pool.latestRecordedPeriodIndex) {
         pool.previousRecordedPeriodIndex = pool.latestRecordedPeriodIndex;
         pool.previousRecordedPrice = pool.latestRecordedPrice;
     }
-    pool.latestRecordedPeriodIndex = periodIndex;
+    pool.latestRecordedPeriodIndex = periodIndex.toI32();
     pool.latestRecordedPrice = event.params.newTokenPrice;
     pool.save();
 
@@ -176,7 +176,7 @@ export function handleUpdatedWeight(event: UpdatedWeight): void {
     if (poolPeriod === null) {
         poolPeriod = new PoolPeriod(poolPeriodID);
         poolPeriod.pool = event.params.poolAddress.toHexString();
-        poolPeriod.index = periodIndex;
+        poolPeriod.index = periodIndex.toI32();
         poolPeriod.weight = ZERO_BI;
         poolPeriod.rewardsCollected = ZERO_BI;
     }
@@ -188,7 +188,7 @@ export function handleUpdatedWeight(event: UpdatedWeight): void {
     if (globalPeriod === null) {
         globalPeriod = new GlobalPeriod(globalPeriodID);
         globalPeriod.rewardsDistributed = ZERO_BI;
-        globalPeriod.index = periodIndex;
+        globalPeriod.index = periodIndex.toI32();
         globalPeriod.weight = ZERO_BI;
     }
     globalPeriod.weight = globalWeight;

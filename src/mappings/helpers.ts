@@ -62,23 +62,24 @@ import {
     );
   }
 
-  export function calculatePeriodIndex(currentTime: number): number {
+  export function calculatePeriodIndex(currentTime: number): BigInt {
     const delta = (currentTime - START_TIME) % PERIOD_DURATION
-    return (currentTime - START_TIME - delta) / PERIOD_DURATION
+    let index = (currentTime - START_TIME - delta) / PERIOD_DURATION
+    return BigInt.fromString(index.toString())
   }
 
-  export function fetchPoolWeight(poolAddress: Address, index: number): BigInt {
+  export function fetchPoolWeight(poolAddress: Address, index: BigInt): BigInt {
     let contract = PoolManager.bind(Address.fromString(POOL_MANAGER_ADDRESS));
   
-    let weightResult = contract.try_poolPeriods(poolAddress, BigInt.fromI32(index));
+    let weightResult = contract.try_poolPeriods(poolAddress, index);
   
     return weightResult.value ? weightResult.value : ZERO_BI;
   }
 
-  export function fetchGlobalWeight(index: number): BigInt {
+  export function fetchGlobalWeight(index: BigInt): BigInt {
     let contract = PoolManager.bind(Address.fromString(POOL_MANAGER_ADDRESS));
   
-    let weightResult = contract.try_globalPeriods(BigInt.fromI32(index));
+    let weightResult = contract.try_globalPeriods(index);
   
     return weightResult.value ? weightResult.value : ZERO_BI;
   }
