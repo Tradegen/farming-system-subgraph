@@ -37,7 +37,7 @@ templates:
     name: StakingRewards
     network: celo-alfajores
     source:
-      abi: StakingRewwards
+      abi: StakingRewards
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -47,7 +47,7 @@ templates:
         - Farm
       abis:
         - name: StakingRewards
-          file: ./abis/BotPerformanceDataFeed.json
+          file: ./abis/StakingRewards.json
       eventHandlers:
         - event: Staked(indexed address,uint256,uint256)
           handler: handleStaked
