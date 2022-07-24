@@ -1,6 +1,4 @@
 import {
-    Address,
-    BigDecimal,
     BigInt
   } from "@graphprotocol/graph-ts";
 import {
@@ -16,9 +14,6 @@ import {
   import {
     ZERO_BI,
   } from "./helpers";
-  import {
-    updatePoolDayData
-  } from "./dayUpdates";
   
   export function handleStaked(event: Staked): void {
       let farm = Farm.load(event.address.toHexString());
@@ -151,8 +146,4 @@ export function handleRewardPaid(event: RewardPaid): void {
     }
     position.totalRewardsEarned = position.totalRewardsEarned.plus(event.params.reward);
     position.save();
-
-    let dayData = updatePoolDayData(event);
-    dayData.dailyRewardsCollected = dayData.dailyRewardsCollected.plus(event.params.reward);
-    dayData.save();
 }

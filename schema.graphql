@@ -14,8 +14,6 @@ type Pool @entity {
     # Pool contract address.
     id: ID!
 
-    farm: Farm!
-
     isEligible: Boolean!
     
     totalRewardsCollected: BigInt!
@@ -32,6 +30,7 @@ type Pool @entity {
     createdOn: BigInt!
 
     periods: [PoolPeriod!]! @derivedFrom(field: "pool")
+    farm: Farm! @derivedFrom(field: "pool")
 }
 
 type PoolPeriod @entity {

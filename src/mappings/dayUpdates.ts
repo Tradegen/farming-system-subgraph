@@ -1,4 +1,4 @@
-import { BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, Address, ethereum } from "@graphprotocol/graph-ts";
 import {
   PoolManager,
   PoolManagerDayData,
@@ -34,11 +34,11 @@ export function updatePoolManagerDayData(event: ethereum.Event): PoolManagerDayD
   return poolManagerDayData as PoolManagerDayData;
 }
 
-export function updatePoolDayData(event: ethereum.Event): PoolDayData {
+export function updatePoolDayData(event: ethereum.Event, poolAddress: Address): PoolDayData {
   let timestamp = event.block.timestamp.toI32();
   let dayID = timestamp / 86400;
   let dayStartTimestamp = dayID * 86400;
-  let dayPoolID = event.address
+  let dayPoolID = poolAddress
     .toHexString()
     .concat("-")
     .concat(BigInt.fromI32(dayID).toString());

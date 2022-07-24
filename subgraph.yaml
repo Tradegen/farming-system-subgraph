@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.1
 description: Tradegen is a decentralized trading platform that focuses on asset management, algo trading, and virtual trading.
 repository: https://github.com/Tradegen/farming-system-subgraph
 schema:

@@ -66,3 +66,19 @@ import {
     const delta = (currentTime - START_TIME) % PERIOD_DURATION
     return (currentTime - START_TIME - delta) / PERIOD_DURATION
   }
+
+  export function fetchPoolWeight(poolAddress: Address, index: number): BigInt {
+    let contract = PoolManager.bind(Address.fromString(POOL_MANAGER_ADDRESS));
+  
+    let weightResult = contract.try_poolPeriods(poolAddress, BigInt.fromI32(index));
+  
+    return weightResult.value ? weightResult.value : ZERO_BI;
+  }
+
+  export function fetchGlobalWeight(index: number): BigInt {
+    let contract = PoolManager.bind(Address.fromString(POOL_MANAGER_ADDRESS));
+  
+    let weightResult = contract.try_globalPeriods(BigInt.fromI32(index));
+  
+    return weightResult.value ? weightResult.value : ZERO_BI;
+  }
