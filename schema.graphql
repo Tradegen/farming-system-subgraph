@@ -2,11 +2,21 @@ type PoolManager @entity {
     # PoolManager contract address.
     id: ID!
 
+    # Total number of pools registered in the system.
+    # Not all pools are eligible for rewards.
     numberOfRegisteredPools: Int!
+
+    # Total number of pools eligible for rewards.
     numberOfEligiblePools: Int!
 
+    # Total pool weight across all pools for the current period.
     globalWeight: BigInt!
+
+    # Total rewards distributed across all pools.
+    # Denominated in the protocol's reward token (not USD).
     totalRewardsDistributed: BigInt!
+
+    # Timestamp at which the system was last updated (a transaction occurred).
     lastUpdated: BigInt!
 }
 
@@ -14,22 +24,43 @@ type Pool @entity {
     # Pool contract address.
     id: ID!
 
+    # Whether the pool is eligible for rewards.
     isEligible: Boolean!
     
+    # Total rewards collected for this pool across all users.
+    # Denominated in the protocol's reward token.
     totalRewardsCollected: BigInt!
 
+    # The pool's unrealized profit (in USD).
+    # This value is stored in the protocol integrating the farming system, and
+    # is updated at the end of each pool transaction before interacting with the farming system.
     unrealizedProfit: BigInt!
 
+    # The latest pool token price (in USD).
     latestRecordedPrice: BigInt!
+
+    # Period index at which the latest price was recorded.
     latestRecordedPeriodIndex: Int!
 
+    # The pool token price (in USD) in the latest period before the "latest recorded period index".
+    # Used for calculating the change in token price while accounting for an arbitrary number
+    # of periods between price updates.
     previousRecordedPrice: BigInt!
+
+    # Period index at which the "previous recorded price" was recorded.
     previousRecordedPeriodIndex: Int!
 
+    # Timestamp at which the pool was last updated (a transaction occurred).
     lastUpdated: BigInt!
+
+    # Timestamp at which the pool was created (registered in the farming system).
     createdOn: BigInt!
 
+    # PoolPeriod entities associated with this pool.
     periods: [PoolPeriod!]! @derivedFrom(field: "pool")
+
+    # Farm entity associated with this pool.
+    # The Pool entity is created first to prevent co-dependencies.
     farm: Farm! @derivedFrom(field: "pool")
 }
 
@@ -37,23 +68,32 @@ type PoolPeriod @entity {
     # Pool ID + "-" + period index
     id: ID!
 
+    # Reference to the pool period's Pool entity.
     pool: Pool!
 
+    # Index of the period in the farming system.
+    # Measured as floor((current time - farming system start time) / 14 days).
     index: Int!
 
+    # The pool's weight for this period.
     weight: BigInt!
 
+    # Amount of reward tokens collected by users in the pool during this period.
     rewardsCollected: BigInt!
 }
 
 type GlobalPeriod @entity {
-    # period index
+    # Period index.
     id: ID!
 
+    # Total number of reward tokens distributed across all pools during this period.
     rewardsDistributed: BigInt!
 
+    # Index of the period in the farming system.
+    # Measured as floor((current time - farming system start time) / 14 days).
     index: Int!
 
+    # The total weight across all pools for this period.
     weight: BigInt!
 }
 
@@ -61,18 +101,23 @@ type Farm @entity {
     # Farm contract address.
     id: ID!
 
+    # Reference to the farm's Pool entity.
     pool: Pool!
 
+    # Total reward tokens distributed by the farm.
     totalRewardsEarned: BigInt!
 
+    # Total number of pool tokens deposited into the farm.
     totalSupply: BigInt!
     weightedTotalSupply: BigInt!
 
+    # Tracks number of pool token deposits by token class.
     numberOfC1: BigInt!
     numberOfC2: BigInt!
     numberOfC3: BigInt!
     numberOfC4: BigInt!
 
+    # Position entities associated with this farm.
     positions: [Position!]! @derivedFrom(field: "farm")
 }
 
@@ -80,8 +125,10 @@ type User @entity {
     # User wallet address.
     id: ID!
 
+    # The total number of reward tokens this user has collected across all positions.
     totalRewardsCollected: BigInt!
 
+    # Position entities associated with this user.
     positions: [Position!]! @derivedFrom(field: "user")
 }
 
@@ -89,13 +136,18 @@ type Position @entity {
     # Farm address + "-" + user address
     id: ID!
 
+    # Entities associated with this position.
     farm: Farm!
     user: User!
 
+    # Total number of reward tokens the user has earned from the farm.
     totalRewardsEarned: BigInt!
 
+    # Number of tokens the user currently has deposited in the farm.
+    # Aggregated across token classes.
     totalSupply: BigInt!
 
+    # Tracks the user's token deposits by class (measures token rarity).
     numberOfC1: BigInt!
     numberOfC2: BigInt!
     numberOfC3: BigInt!
@@ -103,10 +155,11 @@ type Position @entity {
 }
 
 type PoolManagerDayData @entity {
+    # Timestamp rounded to current day by dividing by 86400.
     id: ID!
     date: Int!
 
-    # Measured in TGEN.
+    # Measured in the protocol's reward token.
     dailyRewardsDistributed: BigInt!
     totalRewardsDistributed: BigInt!
 
@@ -118,12 +171,14 @@ type PoolManagerDayData @entity {
 }
 
 type PoolDayData @entity {
+    # Timestamp rounded to current day by dividing by 86400.
     id: ID!
     date: Int!
 
-    # Measured in TGEN.
+    # Measured in the protocol's reward token.
     dailyRewardsCollected: BigInt!
 
+    # Tracked from the protocol integrating the farming system.
     unrealizedProfit: BigInt!
     tokenPrice: BigInt!
 }
